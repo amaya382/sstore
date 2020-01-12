@@ -25,3 +25,5 @@ By storing your slack webhook url in the sstore, you can post to slack from a re
 1. (Local->Remote) Use ssh-agent for carrying your public key
 1. (Remote) `curl -X POST -H 'Content-Type: application/json' -d '{"text": "hello!"}' $(sstore get slack-webhook-url)`
 
+*NOTE: Using a public key from ssh-agent is NOT implemented*
+
