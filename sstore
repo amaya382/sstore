@@ -1,0 +1,22 @@
+#!/bin/bash
+
+sub_cmd="$1"
+key="$2"
+pub_key=""
+prv_key=""
+sstore_host=""
+sstore_user=""
+
+if [ "$sub_cmd" = 'put' ]; then
+  encrypted="$(cat - | openssl rsautl -encrypt -pubin -inkey <(ssh-keygen -f ${pub_key} -e -m pem | openssl rsa -RSAPublicKey_in -pubout 2> /dev/null) 2> /dev/null | openssl base64 -e | tr -d '\n')"
+  ssh "${sstore_user}@${sstore_host}" "put $2 ${encrypted}"
+elif [ "$sub_cmd" = 'get' ]; then
+  ssh "${sstore_user}@${sstore_host}" "get $2" | base64 -d | openssl rsautl -decrypt -inkey "${prv_key}"
+elif [ "$sub_cmd" = 'del' ]; then
+  ssh "${sstore_user}@${sstore_host}" "del $2"
+elif [ "$sub_cmd" = 'ls' ]; then
+  ssh "${sstore_user}@${sstore_host}" "ls"
+else
+  echo "Invalid subcommand: '$sub_cmd'"
+fi
+
